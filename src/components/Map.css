@@ -1,0 +1,232 @@
+.map-container {
+  background: rgba(0, 20, 0, 0.9);
+  border: 1px solid #00ff00;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.2);
+}
+
+.map-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.3);
+}
+
+.map-header h3 {
+  color: #00ff00;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.map-status {
+  font-family: 'Consolas', monospace;
+}
+
+.status-indicator {
+  padding: 5px 15px;
+  border-radius: 3px;
+  font-size: 0.85em;
+  font-weight: bold;
+  letter-spacing: 1px;
+  animation: statusBlink 1s ease-in-out infinite;
+}
+
+@keyframes statusBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.status-indicator.active {
+  background: rgba(0, 255, 0, 0.2);
+  color: #00ff00;
+  border: 1px solid #00ff00;
+}
+
+.status-indicator.complete {
+  background: rgba(255, 0, 0, 0.2);
+  color: #ff0000;
+  border: 1px solid #ff0000;
+  animation: targetPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes targetPulse {
+  0%, 100% { 
+    box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+  }
+  50% { 
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.8);
+  }
+}
+
+.map-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.map-background {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  background: rgba(0, 10, 0, 0.8);
+  border: 1px solid rgba(0, 255, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.map-background::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 255, 0, 0.02) 2px,
+      rgba(0, 255, 0, 0.02) 4px
+    );
+  pointer-events: none;
+}
+
+.map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.location-indicator {
+  animation: indicatorGlow 2s ease-in-out infinite;
+}
+
+@keyframes indicatorGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px #00ff00);
+  }
+  50% {
+    filter: drop-shadow(0 0 15px #00ff00);
+  }
+}
+
+.target-indicator {
+  animation: targetGlow 1s ease-in-out infinite;
+}
+
+@keyframes targetGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px #ff0000);
+  }
+  50% {
+    filter: drop-shadow(0 0 25px #ff0000);
+  }
+}
+
+.map-info {
+  background: rgba(0, 10, 0, 0.6);
+  padding: 15px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 255, 0, 0.1);
+}
+
+.info-row:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  color: #00cc00;
+  font-size: 0.85em;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-value {
+  color: #00ff00;
+  font-family: 'Consolas', monospace;
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.info-value.status-searching {
+  color: #00ff00;
+  animation: textGlow 1s ease-in-out infinite;
+}
+
+.info-value.status-found {
+  color: #ff0000;
+  animation: textGlow 0.75s ease-in-out infinite;
+}
+
+@keyframes textGlow {
+  0%, 100% {
+    text-shadow: 0 0 5px currentColor;
+  }
+  50% {
+    text-shadow: 0 0 15px currentColor;
+  }
+}
+
+.map-legend {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #00cc00;
+  font-size: 0.85em;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  border: 1px solid;
+}
+
+.legend-color.green {
+  background: rgba(0, 255, 0, 0.3);
+  border-color: #00ff00;
+}
+
+.legend-color.red {
+  background: rgba(255, 0, 0, 0.3);
+  border-color: #ff0000;
+}
+
+@media (max-width: 768px) {
+  .map-header {
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  
+  .map-info {
+    font-size: 0.9em;
+  }
+  
+  .map-legend {
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+  }
+}
