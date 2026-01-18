@@ -18,6 +18,8 @@ function App() {
   const [battery, setBattery] = useState(100);
   const [ipAddress, setIpAddress] = useState('');
   const [deviceInfo, setDeviceInfo] = useState(null);
+  const [isPlayingSound, setIsPlayingSound] = useState(false);
+  const [soundStatus, setSoundStatus] = useState('');
   const logContainerRef = useRef(null);
 
   // Lokasi simulasi - iPhone terakhir terlihat di SEPAK AKMIL Magelang
@@ -153,6 +155,36 @@ function App() {
     setSignalStrength(0);
     setBattery(100);
     setDeviceInfo(null);
+    setIsPlayingSound(false);
+    setSoundStatus('');
+  };
+
+  const playSound = async () => {
+    if (isPlayingSound) return;
+    
+    setIsPlayingSound(true);
+    setSoundStatus('🔊 Mengirim perintah ke perangkat...');
+    addLog('📱 Mengirim perintah bunyi ke iPhone...', 'info');
+    
+    await delay(1500);
+    setSoundStatus('📡 Perangkat menerima sinyal...');
+    addLog('📡 Perangkat menerima sinyal...', 'info');
+    
+    await delay(1000);
+    setSoundStatus('🔔 MEMUTAR SUARA...');
+    addLog('🔔 MEMUTAR SUARA: "Find My iPhone BEEP!"', 'success');
+    addLog('🔊 Volume: Maksimal (100%)', 'info');
+    addLog('⏱️ Durasi: 2 menit atau hingga ditemukan', 'info');
+    
+    // Visual feedback
+    await delay(2000);
+    addLog('📱 Perangkat sedang bergetar dan membunyikan alarm...', 'success');
+    setSoundStatus('✅ Suara berhasil diputar!');
+    
+    setTimeout(() => {
+      setIsPlayingSound(false);
+      setSoundStatus('');
+    }, 5000);
   };
 
   return (
@@ -299,6 +331,40 @@ function App() {
                     <span>Terakhir: {finalLocation.lastSeen}</span>
                   </div>
                 </div>
+                
+                <div className="location-full-details">
+                  <h4>📍 Detail Lokasi Lengkap</h4>
+                  <div className="detail-grid">
+                    <div className="detail-field">
+                      <span className="field-label">Latitude</span>
+                      <span className="field-value">{finalLocation.lat.toFixed(6)}</span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="field-label">Longitude</span>
+                      <span className="field-value">{finalLocation.lng.toFixed(6)}</span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="field-label">Wilayah</span>
+                      <span className="field-value">Magelang, Jawa Tengah</span>
+                    </div>
+                    <div className="detail-field">
+                      <span className="field-label">Tipe Lokasi</span>
+                      <span className="field-value">SEPAK AKMIL</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="sound-control">
+                  <button 
+                    className={`sound-button ${isPlayingSound ? 'playing' : ''}`} 
+                    onClick={playSound}
+                    disabled={isPlayingSound}
+                  >
+                    {isPlayingSound ? '🔊 MEMUTAR...' : '🔔 BUNYIKAN IPHONE'}
+                  </button>
+                  {soundStatus && <div className="sound-status">{soundStatus}</div>}
+                </div>
+
                 <button className="reset-button" onClick={resetTracking}>
                   🔄 Lacak Ulang
                 </button>

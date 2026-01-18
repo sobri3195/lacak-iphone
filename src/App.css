@@ -489,6 +489,112 @@ body {
   box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
 }
 
+.location-full-details {
+  background: rgba(0, 15, 0, 0.8);
+  border: 1px solid rgba(0, 255, 0, 0.4);
+  padding: 20px;
+  margin: 20px 0;
+  border-radius: 5px;
+}
+
+.location-full-details h4 {
+  color: #00ff00;
+  margin: 0 0 15px 0;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-align: center;
+  text-shadow: 0 0 10px #00ff00;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 15px;
+}
+
+.detail-field {
+  background: rgba(0, 10, 0, 0.6);
+  padding: 12px;
+  border: 1px solid rgba(0, 255, 0, 0.2);
+  text-align: center;
+}
+
+.field-label {
+  display: block;
+  color: #00cc00;
+  font-size: 0.75em;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 5px;
+}
+
+.field-value {
+  display: block;
+  color: #00ff00;
+  font-family: 'Consolas', monospace;
+  font-size: 0.95em;
+  font-weight: bold;
+}
+
+.sound-control {
+  margin: 20px 0;
+}
+
+.sound-button {
+  padding: 18px 40px;
+  background: linear-gradient(135deg, #333300 0%, #666600 100%);
+  border: 2px solid #ffff00;
+  color: #ffff00;
+  font-family: 'Courier New', monospace;
+  font-size: 1.1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-shadow: 0 0 5px #ffff00;
+  box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+}
+
+.sound-button:hover:not(:disabled) {
+  background: linear-gradient(135deg, #666600 0%, #999900 100%);
+  box-shadow: 0 0 25px rgba(255, 255, 0, 0.6);
+  transform: translateY(-2px);
+}
+
+.sound-button.playing {
+  background: linear-gradient(135deg, #555500 0%, #888800 100%);
+  animation: soundButtonPulse 0.5s ease-in-out infinite;
+}
+
+@keyframes soundButtonPulse {
+  0%, 100% { box-shadow: 0 0 10px rgba(255, 255, 0, 0.5); }
+  50% { box-shadow: 0 0 30px rgba(255, 255, 0, 0.8); }
+}
+
+.sound-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.sound-status {
+  margin-top: 15px;
+  padding: 12px 20px;
+  background: rgba(255, 255, 0, 0.1);
+  border: 1px solid #ffff00;
+  color: #ffff00;
+  text-align: center;
+  font-family: 'Consolas', monospace;
+  font-size: 0.95em;
+  animation: statusFlash 0.5s ease-in-out infinite;
+}
+
+@keyframes statusFlash {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
 .logs-container {
   background: rgba(0, 10, 0, 0.95);
   border: 1px solid #00ff00;
