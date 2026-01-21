@@ -633,3 +633,125 @@ body {
     gap: 15px;
   }
 }
+
+/* Urgent notice styling */
+.urgent-notice {
+  background: linear-gradient(135deg, #2d0000, #660000);
+  border: 2px solid #ff4444;
+  border-radius: 10px;
+  padding: 20px;
+  margin: 20px 0;
+  text-align: left;
+  box-shadow: 0 0 20px rgba(255, 68, 68, 0.3);
+  animation: urgentPulse 2s infinite;
+}
+
+.urgent-notice h4 {
+  color: #ff6666;
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 16px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.urgent-notice p {
+  margin: 8px 0;
+  font-size: 14px;
+  color: #ffaaaa;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { 
+    box-shadow: 0 0 20px rgba(255, 68, 68, 0.3); 
+    transform: scale(1);
+  }
+  50% { 
+    box-shadow: 0 0 30px rgba(255, 68, 68, 0.6); 
+    transform: scale(1.02);
+  }
+}
+
+/* Explanation section styling */
+.explanation-section {
+  background: linear-gradient(145deg, #001a33, #003366);
+  border: 1px solid #0066cc;
+  border-radius: 15px;
+  padding: 25px;
+  margin: 20px 0;
+  box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.explanation-section h3 {
+  color: #66b3ff;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 18px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.explanation-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.explanation-card {
+  background: linear-gradient(145deg, #001122, #003366);
+  border: 1px solid #3388ff;
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 4px 15px rgba(51, 136, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.explanation-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(51, 136, 255, 0.2);
+  border-color: #66b3ff;
+}
+
+.explanation-card h4 {
+  color: #99ccff;
+  margin-bottom: 15px;
+  font-size: 16px;
+  text-align: center;
+}
+
+.explanation-card p {
+  margin: 10px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #cce6ff;
+}
+
+.explanation-card strong {
+  color: #66b3ff;
+  font-weight: bold;
+}
+
+/* Responsive design for new components */
+@media (max-width: 768px) {
+  .explanation-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .explanation-card {
+    padding: 15px;
+  }
+  
+  .urgent-notice {
+    padding: 15px;
+  }
+  
+  .urgent-notice h4 {
+    font-size: 14px;
+  }
+  
+  .urgent-notice p {
+    font-size: 13px;
+  }
+}

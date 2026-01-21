@@ -18,6 +18,8 @@ function App() {
   const [battery, setBattery] = useState(100);
   const [ipAddress, setIpAddress] = useState('');
   const [deviceInfo, setDeviceInfo] = useState(null);
+  const [btsInfo, setBtsInfo] = useState(null);
+  const [playSound, setPlaySound] = useState(false);
   const logContainerRef = useRef(null);
 
   // Lokasi simulasi - iPhone terakhir terlihat di SEPAK AKMIL Magelang
@@ -36,7 +38,8 @@ function App() {
     lng: 110.2198,
     address: "SEPAK (Sekolah Pertolongan Pertama Kesehatan) AKMIL, Magelang, Jawa Tengah",
     accuracy: "±5 meter",
-    lastSeen: new Date().toLocaleString('id-ID')
+    lastSeen: new Date().toLocaleString('id-ID'),
+    lastSeenToday: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
   };
 
   useEffect(() => {
@@ -44,6 +47,42 @@ function App() {
       logContainerRef.current.scrollTop = logContainerRef.current.scrollHeight;
     }
   }, [logs]);
+
+  // Sound notification when tracking is complete
+  useEffect(() => {
+    if (playSound) {
+      // Create audio notification
+      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const oscillator = audioContext.createOscillator();
+      const gainNode = audioContext.createGain();
+      
+      oscillator.connect(gainNode);
+      gainNode.connect(audioContext.destination);
+      
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 1);
+      
+      oscillator.start(audioContext.currentTime);
+      oscillator.stop(audioContext.currentTime + 1);
+      
+      // Repeat the sound 3 times
+      setTimeout(() => {
+        const oscillator2 = audioContext.createOscillator();
+        const gainNode2 = audioContext.createGain();
+        
+        oscillator2.connect(gainNode2);
+        gainNode2.connect(audioContext.destination);
+        
+        oscillator2.frequency.setValueAtTime(1000, audioContext.currentTime);
+        gainNode2.gain.setValueAtTime(0.3, audioContext.currentTime);
+        gainNode2.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+        
+        oscillator2.start(audioContext.currentTime);
+        oscillator2.stop(audioContext.currentTime + 0.5);
+      }, 500);
+    }
+  }, [playSound]);
 
   const addLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString('id-ID');
@@ -89,11 +128,23 @@ function App() {
     addLog('📱 Perangkat ditemukan: iPhone 16 Pro Max', 'success');
     addLog('🆔 Serial Number: DNPXK3XXXXXX', 'info');
     addLog('📋 IMEI: 3548990809XXXXX', 'info');
+    addLog('🏢 BTS Tower: INDOSAT OOREDOO Magelang', 'info');
+    addLog('📡 Frekuensi: 1800 MHz', 'info');
+    addLog('🔊 MAC Address: 5c:96:9d:2a:b1:c8', 'info');
     setDeviceInfo({
       model: 'iPhone 16 Pro Max',
       serial: 'DNPXK3XXXXXX',
       imei: '3548990809XXXXX',
-      os: 'iOS 18.1.1'
+      os: 'iOS 18.1.1',
+      macAddress: '5c:96:9d:2a:b1:c8',
+      carrier: 'INDOSAT OOREDOO',
+      frequency: '1800 MHz'
+    });
+    setBtsInfo({
+      tower: 'INDOSAT OOREDOO Magelang',
+      frequency: '1800 MHz',
+      signal: '4G LTE',
+      coverage: 'Excellent'
     });
     setProgress(55);
 
@@ -125,6 +176,10 @@ function App() {
     addLog('🔴 Signal Maximum: 100%', 'success');
     addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'divider');
     
+    // Play sound notification
+    setPlaySound(true);
+    setTimeout(() => setPlaySound(false), 2000);
+    
     setProgress(100);
     setSignalStrength(100);
     setTrackingComplete(true);
@@ -134,9 +189,10 @@ function App() {
     addLog(`📍 LOKASI AKHIR: ${targetLocation.name}`, 'success');
     addLog(`🏠 Alamat: ${targetLocation.address}`, 'info');
     addLog(`🎯 Akurasi: ${targetLocation.accuracy}`, 'info');
-    addLog(`⏰ Terakhir terlihat: ${targetLocation.lastSeen}`, 'info');
+    addLog(`⏰ Terakhir terlihat HARI INI: ${targetLocation.lastSeenToday}`, 'success');
     addLog('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', 'divider');
     addLog('✅ Pelacakan selesai!', 'success');
+    addLog('🔊 Peringatan: iPhone akan berbunyi selama 2 menit', 'warning');
     addLog('💡 Silakan hubungi pihak berwenang untuk penemuan perangkat', 'warning');
   };
 
@@ -249,7 +305,7 @@ function App() {
 
             {deviceInfo && (
               <div className="device-info">
-                <h3>📱 Informasi Perangkat</h3>
+                <h3>📱 Informasi Perangkat iPhone</h3>
                 <div className="info-grid">
                   <div className="info-item">
                     <span className="info-label">Model:</span>
@@ -264,8 +320,40 @@ function App() {
                     <span className="info-value">{deviceInfo.imei}</span>
                   </div>
                   <div className="info-item">
+                    <span className="info-label">MAC Address:</span>
+                    <span className="info-value">{deviceInfo.macAddress}</span>
+                  </div>
+                  <div className="info-item">
                     <span className="info-label">OS:</span>
                     <span className="info-value">{deviceInfo.os}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Carrier:</span>
+                    <span className="info-value">{deviceInfo.carrier}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {btsInfo && (
+              <div className="device-info">
+                <h3>📡 Informasi BTS Tower</h3>
+                <div className="info-grid">
+                  <div className="info-item">
+                    <span className="info-label">Tower:</span>
+                    <span className="info-value">{btsInfo.tower}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Frekuensi:</span>
+                    <span className="info-value">{btsInfo.frequency}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Signal:</span>
+                    <span className="info-value">{btsInfo.signal}</span>
+                  </div>
+                  <div className="info-item">
+                    <span className="info-label">Coverage:</span>
+                    <span className="info-value">{btsInfo.coverage}</span>
                   </div>
                 </div>
               </div>
@@ -296,12 +384,48 @@ function App() {
                   </div>
                   <div className="detail-item">
                     <span className="detail-icon">⏰</span>
-                    <span>Terakhir: {finalLocation.lastSeen}</span>
+                    <span>Terakhir HARI INI: {finalLocation.lastSeenToday}</span>
                   </div>
                 </div>
+                
+                <div className="urgent-notice">
+                  <h4>🚨 PERINGATAN KRITIS</h4>
+                  <p>📱 iPhone dalam status "Hilang"</p>
+                  <p>🔊 Sound alert aktif selama 2 menit</p>
+                  <p>📞 Silakan hubungi owner: {phone || 'Nomor tidak tersedia'}</p>
+                  <p>🚔 Atau hubungi Pihak Berwenang</p>
+                </div>
+                
                 <button className="reset-button" onClick={resetTracking}>
                   🔄 Lacak Ulang
                 </button>
+              </div>
+            )}
+
+            {trackingComplete && (
+              <div className="explanation-section">
+                <h3>📋 Keterangan Teknis</h3>
+                <div className="explanation-grid">
+                  <div className="explanation-card">
+                    <h4>📱 iPhone (International Mobile Equipment Identity)</h4>
+                    <p><strong>Definisi:</strong> Nomor identifikasi unik 15 digit yang diberikan untuk setiap perangkat seluler.</p>
+                    <p><strong>Kegunaan:</strong> Identifikasi perangkat, pelacakan lokasi, pemblokiran perangkat hilang.</p>
+                    <p><strong>Contoh IMEI:</strong> 3548990809XXXXX (sudah disembunyikan untuk keamanan)</p>
+                  </div>
+                  <div className="explanation-card">
+                    <h4>📡 BTS (Base Transceiver Station)</h4>
+                    <p><strong>Definisi:</strong> Menara/tower seluler yang menerima dan mentransmisikan sinyal radio.</p>
+                    <p><strong>Kegunaan:</strong> Memberikan jangkauan sinyal, triangulasi lokasi, komunikasi perangkat.</p>
+                    <p><strong>Frekuensi:</strong> 1800 MHz (4G LTE) untuk数据传输 cepat</p>
+                  </div>
+                  <div className="explanation-card">
+                    <h4>🔍 Cara Kerja Pelacakan</h4>
+                    <p><strong>GPS:</strong> Satellite positioning system untuk koordinat presisi</p>
+                    <p><strong>Cell Tower:</strong> Triangulasi dari beberapa BTS tower</p>
+                    <p><strong>WiFi:</strong> Mac Address dari hotspot yang terdeteksi</p>
+                    <p><strong>Accuracy:</strong> ±5 meter untuk hasil terbaik</p>
+                  </div>
+                </div>
               </div>
             )}
 
