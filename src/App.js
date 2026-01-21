@@ -26,21 +26,22 @@ function App() {
   const [mapType, setMapType] = useState('openstreetmap'); // 'svg' or 'openstreetmap'
   const logContainerRef = useRef(null);
 
-  // Lokasi simulasi - iPhone terakhir terlihat di SEPAK AKMIL Magelang
+  // Lokasi simulasi - iPhone terakhir terlihat di Magelang
   const locations = [
-    { name: "Sedang mencari sinyal...", lat: -7.489, lng: 110.219, city: "Mencari..." },
+    { name: "Sedang mencari sinyal...", lat: -7.500, lng: 110.211, city: "Mencari..." },
     { name: "Terhubung ke tower Jakarta Selatan", lat: -6.261, lng: 106.808, city: "Jakarta Selatan" },
     { name: "Pindah ke tower Semarang", lat: -6.966, lng: 110.420, city: "Semarang" },
-    { name: "Sinyal terdeteksi di area Magelang", lat: -7.480, lng: 110.218, city: "Magelang" },
-    { name: "Lokasi semakin dekat - Area Akademi Militer", lat: -7.489, lng: 110.219, city: "AKMIL Area" },
-    { name: "TERDETEKSI: SEPAK AKMIL Magelang", lat: -7.4915, lng: 110.2198, city: "SEPAK AKMIL" }
+    { name: "Sinyal terdeteksi di area Magelang", lat: -7.500, lng: 110.211, city: "Magelang" },
+    { name: "Lokasi semakin dekat - Area Magelang", lat: -7.500, lng: 110.211, city: "Magelang Area" },
+    { name: "TERDETEKSI: Magelang", lat: -7.500833, lng: 110.211667, city: "Magelang" }
   ];
 
   const targetLocation = {
-    name: "SEPAK AKMIL Magelang - Final Location",
-    lat: -7.4915,
-    lng: 110.2198,
-    address: "SEPAK (Sekolah Pertolongan Pertama Kesehatan) AKMIL, Magelang, Jawa Tengah",
+    name: "Magelang - Final Location",
+    lat: -7.500833,
+    lng: 110.211667,
+    address: "Magelang, Jawa Tengah, Indonesia",
+    googleMapsUrl: "https://www.google.com/maps?q=-7.500833,110.211667",
     accuracy: "±5 meter",
     lastSeen: new Date().toLocaleString('id-ID'),
     lastSeenToday: new Date().toLocaleDateString('id-ID') + ' ' + new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
@@ -472,6 +473,21 @@ function App() {
                     <span className="detail-icon">⏰</span>
                     <span>Terakhir HARI INI: {finalLocation.lastSeenToday}</span>
                   </div>
+                  <div className="detail-item">
+                    <span className="detail-icon">📍</span>
+                    <span>Lat: {finalLocation.lat.toFixed(6)}, Lng: {finalLocation.lng.toFixed(6)}</span>
+                  </div>
+                </div>
+
+                <div className="google-maps-link">
+                  <a 
+                    href={finalLocation.googleMapsUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="google-maps-button"
+                  >
+                    🗺️ Buka di Google Maps
+                  </a>
                 </div>
                 
                 <div className="iphone-sound-control">
