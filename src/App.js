@@ -184,15 +184,15 @@ function App() {
 
     await delay(1000);
     addLog('📱 Perangkat ditemukan: iPhone 16 Pro Max', 'success');
-    addLog('🆔 Serial Number: DNPXK3XXXXXX', 'info');
-    addLog('📋 IMEI: 3548990809XXXXX', 'info');
+    addLog('🆔 Serial Number: DNPXK3ABCDEF', 'info');
+    addLog('📋 IMEI: 354899080912345', 'info');
     addLog('🏢 BTS Tower: INDOSAT OOREDOO Magelang', 'info');
     addLog('📡 Frekuensi: 1800 MHz', 'info');
     addLog('🔊 MAC Address: 5c:96:9d:2a:b1:c8', 'info');
     setDeviceInfo({
       model: 'iPhone 16 Pro Max',
-      serial: 'DNPXK3XXXXXX',
-      imei: '3548990809XXXXX',
+      serial: 'DNPXK3ABCDEF',
+      imei: '354899080912345',
       os: 'iOS 18.1.1',
       macAddress: '5c:96:9d:2a:b1:c8',
       carrier: 'INDOSAT OOREDOO',
