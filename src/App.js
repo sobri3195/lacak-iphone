@@ -20,6 +20,8 @@ function App() {
   const [deviceInfo, setDeviceInfo] = useState(null);
   const [btsInfo, setBtsInfo] = useState(null);
   const [playSound, setPlaySound] = useState(false);
+  const [iphoneSoundActive, setIphoneSoundActive] = useState(false);
+  const [soundTimer, setSoundTimer] = useState(0);
   const logContainerRef = useRef(null);
 
   // Lokasi simulasi - iPhone terakhir terlihat di SEPAK AKMIL Magelang
@@ -84,9 +86,63 @@ function App() {
     }
   }, [playSound]);
 
+  // Timer untuk bunyi iPhone
+  useEffect(() => {
+    let interval;
+    if (iphoneSoundActive && soundTimer > 0) {
+      interval = setInterval(() => {
+        setSoundTimer(timer => {
+          if (timer <= 1) {
+            stopIphoneSound();
+            return 0;
+          }
+          return timer - 1;
+        });
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [iphoneSoundActive, soundTimer]);
+
   const addLog = (message, type = 'info') => {
     const timestamp = new Date().toLocaleTimeString('id-ID');
     setLogs(prev => [...prev, { timestamp, message, type }]);
+  };
+
+  const startIphoneSound = () => {
+    setIphoneSoundActive(true);
+    setSoundTimer(120); // 2 menit = 120 detik
+    addLog('🔊 Mengaktifkan bunyi iPhone...', 'success');
+    addLog('📱 iPhone akan berbunyi selama 2 menit', 'warning');
+    
+    // Bunyi iPhone simulasi (frekuensi lebih tinggi dan lebih sering)
+    const playIphoneBeep = () => {
+      if (iphoneSoundActive) {
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        const oscillator = audioContext.createOscillator();
+        const gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        oscillator.frequency.setValueAtTime(1200, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.4, audioContext.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+        
+        oscillator.start(audioContext.currentTime);
+        oscillator.stop(audioContext.currentTime + 0.3);
+        
+        // Ulangi setiap 2 detik
+        setTimeout(playIphoneBeep, 2000);
+      }
+    };
+    
+    playIphoneBeep();
+  };
+
+  const stopIphoneSound = () => {
+    setIphoneSoundActive(false);
+    setSoundTimer(0);
+    addLog('⏹️ Bunyi iPhone dinonaktifkan', 'info');
   };
 
   const startTracking = async () => {
@@ -386,6 +442,26 @@ function App() {
                     <span className="detail-icon">⏰</span>
                     <span>Terakhir HARI INI: {finalLocation.lastSeenToday}</span>
                   </div>
+                </div>
+                
+                <div className="iphone-sound-control">
+                  <h4>🔊 KONTROL BUNYI IPHONE</h4>
+                  {iphoneSoundActive ? (
+                    <div className="sound-active">
+                      <p>🔊 Bunyi iPhone AKTIF</p>
+                      <p>⏱️ Sisa waktu: {Math.floor(soundTimer / 60)}:{(soundTimer % 60).toString().padStart(2, '0')}</p>
+                      <button className="stop-sound-button" onClick={stopIphoneSound}>
+                        ⏹️ MATIKAN BUNYI
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="sound-inactive">
+                      <p>🔇 Bunyi iPhone NONAKTIF</p>
+                      <button className="sound-button" onClick={startIphoneSound}>
+                        🔊 AKTIFKAN BUNYI IPHONE
+                      </button>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="urgent-notice">
