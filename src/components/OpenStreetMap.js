@@ -228,7 +228,7 @@ const OpenStreetMap = ({ currentLocation, finalLocation, isComplete, liveUpdate 
 
   const centerOnTarget = () => {
     if (mapInstanceRef.current && finalLocation) {
-      mapInstanceRef.current.setView([finalLocation.lat, finalLocation.lng], 16);
+      mapInstanceRef.current.setView([finalLocation.lat, finalLocation.lng], 18);
       if (targetMarkerRef.current) {
         targetMarkerRef.current.openPopup();
       }
