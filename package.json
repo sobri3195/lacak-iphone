@@ -20,8 +20,10 @@
     "url": "https://github.com/sobri3195/lacak-iphone/issues"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-leaflet": "^5.0.0",
     "react-scripts": "^5.0.1"
   },
   "devDependencies": {

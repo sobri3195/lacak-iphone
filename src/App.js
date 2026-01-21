@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Map from './components/Map';
+import OpenStreetMap from './components/OpenStreetMap';
 import MatrixBackground from './components/MatrixBackground';
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
   const [playSound, setPlaySound] = useState(false);
   const [iphoneSoundActive, setIphoneSoundActive] = useState(false);
   const [soundTimer, setSoundTimer] = useState(0);
+  const [mapType, setMapType] = useState('openstreetmap'); // 'svg' or 'openstreetmap'
   const logContainerRef = useRef(null);
 
   // Lokasi simulasi - iPhone terakhir terlihat di SEPAK AKMIL Magelang
@@ -318,13 +320,41 @@ function App() {
 
         {stage === 'tracking' && (
           <div className="tracking-section">
-            {showMap && (
+            {/* Map Type Toggle */}
+            <div className="map-toggle-container">
+              <div className="map-toggle-header">
+                <h3>🗺️ PILIH JENIS MAP</h3>
+                <div className="map-type-toggle">
+                  <button 
+                    className={`map-toggle-btn ${mapType === 'openstreetmap' ? 'active' : ''}`}
+                    onClick={() => setMapType('openstreetmap')}
+                  >
+                    🌍 OpenStreetMap
+                  </button>
+                  <button 
+                    className={`map-toggle-btn ${mapType === 'svg' ? 'active' : ''}`}
+                    onClick={() => setMapType('svg')}
+                  >
+                    📊 SVG Map
+                  </button>
+                </div>
+              </div>
+            </div>
+            
+            {(mapType === 'openstreetmap' && showMap) ? (
+              <OpenStreetMap 
+                currentLocation={currentLocation}
+                finalLocation={finalLocation}
+                isComplete={trackingComplete}
+                liveUpdate={true}
+              />
+            ) : (showMap && mapType === 'svg') ? (
               <Map 
                 currentLocation={currentLocation}
                 finalLocation={finalLocation}
                 isComplete={trackingComplete}
               />
-            )}
+            ) : null}
             
             <div className="progress-container">
               <div className="progress-bar">
