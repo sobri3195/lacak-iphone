@@ -546,11 +546,47 @@ body {
 }
 
 @keyframes stopButtonPulse {
-  0%, 100% { 
+  0%, 100% {
     box-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
   }
-  50% { 
+  50% {
     box-shadow: 0 0 20px rgba(255, 0, 0, 0.8);
+  }
+}
+
+.google-maps-link {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.google-maps-button {
+  display: inline-block;
+  padding: 12px 30px;
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc05 75%, #ea4335 100%);
+  border: 2px solid #4285f4;
+  color: #ffffff;
+  font-family: 'Courier New', monospace;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  animation: googleMapsPulse 2s ease-in-out infinite;
+}
+
+.google-maps-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(66, 133, 244, 0.6);
+}
+
+@keyframes googleMapsPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(66, 133, 244, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(66, 133, 244, 0.8);
   }
 }
 
