@@ -11,12 +11,25 @@ L.Icon.Default.mergeOptions({
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
 });
 
-const OpenStreetMap = ({ currentLocation, finalLocation, isComplete, liveUpdate = true }) => {
+const OpenStreetMap = ({ 
+  currentLocation, 
+  finalLocation, 
+  isComplete, 
+  liveUpdate = true,
+  // New props for dual location tracking
+  location1 = null,
+  location2 = null,
+  showHistory = false,
+  historyData = []
+}) => {
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const currentMarkerRef = useRef(null);
   const targetMarkerRef = useRef(null);
   const pathLineRef = useRef(null);
+  const location1MarkerRef = useRef(null);
+  const location2MarkerRef = useRef(null);
+  const historyLineRef = useRef(null);
   const [mapReady, setMapReady] = useState(false);
 
   // Custom icons
@@ -35,6 +48,25 @@ const OpenStreetMap = ({ currentLocation, finalLocation, isComplete, liveUpdate 
 
   const currentLocationIcon = createCustomIcon('#00ff00', true);
   const targetLocationIcon = createCustomIcon('#ff0000', true);
+  const location1Icon = createCustomIcon('#00bfff', true); // Cyan for location 1
+  const location2Icon = createCustomIcon('#ff00ff', true); // Magenta for location 2
+  
+  // Calculate distance between two points (Haversine formula)
+  const calculateDistance = (lat1, lng1, lat2, lng2) => {
+    const R = 6371e3; // Earth radius in meters
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lng2 - lng1) * Math.PI / 180;
+
+    const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+              Math.cos(φ1) * Math.cos(φ2) *
+              Math.sin(Δλ/2) * Math.sin(Δλ/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+    const distance = R * c; // Distance in meters
+    return distance;
+  };
 
   useEffect(() => {
     if (!mapRef.current || mapInstanceRef.current) return;
@@ -214,6 +246,92 @@ const OpenStreetMap = ({ currentLocation, finalLocation, isComplete, liveUpdate 
     };
   }, [liveUpdate, isComplete, currentLocation, mapReady]);
 
+  // Dual location tracking with history
+  useEffect(() => {
+    if (!mapReady || !mapInstanceRef.current || !showHistory || !location1 || !location2) return;
+
+    // Remove existing markers
+    if (location1MarkerRef.current) {
+      mapInstanceRef.current.removeLayer(location1MarkerRef.current);
+    }
+    if (location2MarkerRef.current) {
+      mapInstanceRef.current.removeLayer(location2MarkerRef.current);
+    }
+    if (historyLineRef.current) {
+      mapInstanceRef.current.removeLayer(historyLineRef.current);
+    }
+
+    const latlng1 = [location1.lat, location1.lng];
+    const latlng2 = [location2.lat, location2.lng];
+
+    // Calculate distance
+    const distance = calculateDistance(location1.lat, location1.lng, location2.lat, location2.lng);
+    const distanceKm = (distance / 1000).toFixed(2);
+    const distanceM = distance.toFixed(1);
+
+    // Add location 1 marker
+    location1MarkerRef.current = L.marker(latlng1, { icon: location1Icon })
+      .addTo(mapInstanceRef.current)
+      .bindPopup(`
+        <div class="popup-content">
+          <h4>📍 LOKASI 1</h4>
+          <p><strong>${location1.name || 'Lokasi Pertama'}</strong></p>
+          <p>📊 Koordinat: ${location1.lat.toFixed(6)}, ${location1.lng.toFixed(6)}</p>
+          <p>📏 Jarak ke Lokasi 2: ${distanceKm} km (${distanceM} m)</p>
+          ${location1.timestamp ? `<p>⏰ ${location1.timestamp}</p>` : ''}
+        </div>
+      `);
+
+    // Add location 2 marker
+    location2MarkerRef.current = L.marker(latlng2, { icon: location2Icon })
+      .addTo(mapInstanceRef.current)
+      .bindPopup(`
+        <div class="popup-content">
+          <h4>📍 LOKASI 2</h4>
+          <p><strong>${location2.name || 'Lokasi Kedua'}</strong></p>
+          <p>📊 Koordinat: ${location2.lat.toFixed(6)}, ${location2.lng.toFixed(6)}</p>
+          <p>📏 Jarak dari Lokasi 1: ${distanceKm} km (${distanceM} m)</p>
+          ${location2.timestamp ? `<p>⏰ ${location2.timestamp}</p>` : ''}
+        </div>
+      `);
+
+    // Draw line between locations
+    historyLineRef.current = L.polyline([latlng1, latlng2], {
+      color: '#ffff00',
+      weight: 4,
+      opacity: 0.8,
+      dashArray: '10, 5'
+    }).addTo(mapInstanceRef.current);
+
+    // Add distance label in the middle of the line
+    const midLat = (location1.lat + location2.lat) / 2;
+    const midLng = (location1.lng + location2.lng) / 2;
+    
+    const distanceLabel = L.marker([midLat, midLng], {
+      icon: L.divIcon({
+        className: 'distance-label',
+        html: `<div style="background: rgba(0,0,0,0.8); color: #ffff00; padding: 5px 10px; border-radius: 5px; font-weight: bold; white-space: nowrap; border: 2px solid #ffff00;">📏 ${distanceKm} km</div>`,
+        iconSize: [100, 30],
+        iconAnchor: [50, 15]
+      })
+    }).addTo(mapInstanceRef.current);
+
+    // Fit map to show both markers
+    const group = L.featureGroup([location1MarkerRef.current, location2MarkerRef.current]);
+    mapInstanceRef.current.fitBounds(group.getBounds().pad(0.2));
+
+    // Auto-open popups
+    setTimeout(() => {
+      location1MarkerRef.current.openPopup();
+    }, 500);
+
+    return () => {
+      if (distanceLabel) {
+        mapInstanceRef.current.removeLayer(distanceLabel);
+      }
+    };
+  }, [location1, location2, showHistory, mapReady]);
+
   const handleZoomIn = () => {
     if (mapInstanceRef.current) {
       mapInstanceRef.current.zoomIn();
@@ -293,21 +411,67 @@ const OpenStreetMap = ({ currentLocation, finalLocation, isComplete, liveUpdate 
       </div>
       
       <div className="map-legend">
-        <div className="legend-item">
-          <span className="legend-marker current-marker"></span>
-          <span>Current Location</span>
-        </div>
-        {isComplete && (
-          <div className="legend-item">
-            <span className="legend-marker target-marker"></span>
-            <span>Target Location</span>
-          </div>
+        {showHistory ? (
+          <>
+            <div className="legend-item">
+              <span className="legend-marker" style={{background: '#00bfff'}}></span>
+              <span>Lokasi 1</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-marker" style={{background: '#ff00ff'}}></span>
+              <span>Lokasi 2</span>
+            </div>
+            <div className="legend-item">
+              <span className="legend-marker" style={{background: '#ffff00', width: '40px'}}></span>
+              <span>Jarak</span>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="legend-item">
+              <span className="legend-marker current-marker"></span>
+              <span>Current Location</span>
+            </div>
+            {isComplete && (
+              <div className="legend-item">
+                <span className="legend-marker target-marker"></span>
+                <span>Target Location</span>
+              </div>
+            )}
+            <div className="legend-item">
+              <span className="legend-marker search-area"></span>
+              <span>Search Area</span>
+            </div>
+          </>
         )}
-        <div className="legend-item">
-          <span className="legend-marker search-area"></span>
-          <span>Search Area</span>
-        </div>
       </div>
+      
+      {showHistory && historyData && historyData.length > 0 && (
+        <div className="history-panel">
+          <h3>📊 RIWAYAT PERGERAKAN - JANUARI 2025</h3>
+          <div className="history-list">
+            {historyData.map((entry, index) => (
+              <div key={index} className="history-entry">
+                <div className="history-date">📅 {entry.date}</div>
+                <div className="history-details">
+                  <div className="history-location">
+                    <span style={{color: '#00bfff'}}>📍 Lokasi 1:</span> {entry.location1}
+                  </div>
+                  <div className="history-location">
+                    <span style={{color: '#ff00ff'}}>📍 Lokasi 2:</span> {entry.location2}
+                  </div>
+                  <div className="history-distance">
+                    <span style={{color: '#ffff00'}}>📏 Jarak:</span> {entry.distance}
+                  </div>
+                  {entry.note && (
+                    <div className="history-note">📝 {entry.note}</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

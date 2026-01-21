@@ -24,7 +24,61 @@ function App() {
   const [iphoneSoundActive, setIphoneSoundActive] = useState(false);
   const [soundTimer, setSoundTimer] = useState(0);
   const [mapType, setMapType] = useState('openstreetmap'); // 'svg' or 'openstreetmap'
+  const [showDualLocation, setShowDualLocation] = useState(false);
   const logContainerRef = useRef(null);
+
+  // Data untuk 2 lokasi yang diberikan user
+  const dualLocationData = {
+    location1: {
+      lat: -7.505244,
+      lng: 110.211595,
+      name: "SEPAK AKMIL - Lokasi A",
+      timestamp: "18 Januari 2025, 14:23"
+    },
+    location2: {
+      lat: -7.503672,
+      lng: 110.211912,
+      name: "SEPAK AKMIL - Lokasi B",
+      timestamp: "21 Januari 2025, 09:17"
+    },
+    historyData: [
+      {
+        date: "18 Januari 2025, 14:23",
+        location1: "SEPAK AKMIL - Lokasi A (-7.505244, 110.211595)",
+        location2: "SEPAK AKMIL - Lokasi B (-7.503672, 110.211912)",
+        distance: "177.14 meter",
+        note: "Pergerakan pertama terdeteksi"
+      },
+      {
+        date: "19 Januari 2025, 08:45",
+        location1: "SEPAK AKMIL - Lokasi A (-7.505244, 110.211595)",
+        location2: "SEPAK AKMIL - Lokasi B (-7.503672, 110.211912)",
+        distance: "177.14 meter",
+        note: "Posisi stabil di area yang sama"
+      },
+      {
+        date: "19 Januari 2025, 15:30",
+        location1: "SEPAK AKMIL - Lokasi A (-7.505244, 110.211595)",
+        location2: "SEPAK AKMIL - Lokasi B (-7.503672, 110.211912)",
+        distance: "177.14 meter",
+        note: "iPhone berada di sekitar area SEPAK AKMIL"
+      },
+      {
+        date: "20 Januari 2025, 11:12",
+        location1: "SEPAK AKMIL - Lokasi A (-7.505244, 110.211595)",
+        location2: "SEPAK AKMIL - Lokasi B (-7.503672, 110.211912)",
+        distance: "177.14 meter",
+        note: "Sinyal kuat, device aktif"
+      },
+      {
+        date: "21 Januari 2025, 09:17",
+        location1: "SEPAK AKMIL - Lokasi A (-7.505244, 110.211595)",
+        location2: "SEPAK AKMIL - Lokasi B (-7.503672, 110.211912)",
+        distance: "177.14 meter",
+        note: "Terakhir terlihat - posisi akhir"
+      }
+    ]
+  };
 
   // Lokasi simulasi - iPhone terakhir terlihat di Magelang
   const locations = [
@@ -341,13 +395,36 @@ function App() {
                 </div>
               </div>
             </div>
+
+            {/* Dual Location Toggle */}
+            {trackingComplete && (
+              <div className="dual-location-toggle">
+                <button 
+                  className={`dual-location-btn ${showDualLocation ? 'active' : ''}`}
+                  onClick={() => setShowDualLocation(!showDualLocation)}
+                >
+                  {showDualLocation ? '📍 Tampilkan Tracking Normal' : '📊 Tampilkan Riwayat 2 Lokasi'}
+                </button>
+                {showDualLocation && (
+                  <div className="dual-location-info">
+                    <p>🗓️ Periode: 18-21 Januari 2025</p>
+                    <p>📏 Jarak: ~177 meter antar lokasi</p>
+                  </div>
+                )}
+              </div>
+            )}
             
             {(mapType === 'openstreetmap' && showMap) ? (
               <OpenStreetMap 
-                currentLocation={currentLocation}
-                finalLocation={finalLocation}
+                currentLocation={showDualLocation ? null : currentLocation}
+                finalLocation={showDualLocation ? null : finalLocation}
                 isComplete={trackingComplete}
-                liveUpdate={true}
+                liveUpdate={!showDualLocation}
+                // Dual location props
+                location1={showDualLocation ? dualLocationData.location1 : null}
+                location2={showDualLocation ? dualLocationData.location2 : null}
+                showHistory={showDualLocation}
+                historyData={showDualLocation ? dualLocationData.historyData : []}
               />
             ) : (showMap && mapType === 'svg') ? (
               <Map 
