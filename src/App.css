@@ -840,3 +840,107 @@ body {
     font-size: 13px;
   }
 }
+
+/* Map Toggle Styles */
+.map-toggle-container {
+  background: rgba(0, 20, 0, 0.8);
+  border: 2px solid #00ff00;
+  border-radius: 10px;
+  margin: 20px 0;
+  padding: 15px;
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+}
+
+.map-toggle-header {
+  text-align: center;
+}
+
+.map-toggle-header h3 {
+  color: #00ff00;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  text-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  font-family: 'Courier New', monospace;
+}
+
+.map-type-toggle {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.map-toggle-btn {
+  background: linear-gradient(145deg, #001a00, #003300);
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 12px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: all 0.3s ease;
+  font-family: 'Courier New', monospace;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  min-width: 160px;
+}
+
+.map-toggle-btn:hover {
+  background: linear-gradient(145deg, #003300, #004400);
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.4);
+  transform: translateY(-2px);
+}
+
+.map-toggle-btn.active {
+  background: linear-gradient(145deg, #004400, #005500);
+  box-shadow: 0 0 20px rgba(0, 255, 0, 0.6);
+  border-color: #00ff00;
+  color: #00ff00;
+  animation: activeGlow 2s infinite alternate;
+}
+
+.map-toggle-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+}
+
+@keyframes activeGlow {
+  0% {
+    box-shadow: 0 0 10px rgba(0, 255, 0, 0.4);
+  }
+  100% {
+    box-shadow: 0 0 25px rgba(0, 255, 0, 0.8);
+  }
+}
+
+/* Responsive map toggle */
+@media (max-width: 768px) {
+  .map-type-toggle {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .map-toggle-btn {
+    width: 100%;
+    max-width: 250px;
+    min-width: auto;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-toggle-container {
+    padding: 10px;
+    margin: 10px 0;
+  }
+  
+  .map-toggle-btn {
+    padding: 10px 15px;
+    font-size: 12px;
+  }
+  
+  .map-toggle-header h3 {
+    font-size: 1em;
+    margin-bottom: 10px;
+  }
+}
